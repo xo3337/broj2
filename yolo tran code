@@ -1,0 +1,84 @@
+# ===========================================
+# 1) Mount Drive (for saving results only)
+# ===========================================
+from google.colab import drive
+drive.mount('/content/drive')
+
+# ===========================================
+# 2) Copy dataset from Drive → Local SSD (FAST)
+# ===========================================
+
+
+# ===========================================
+# 3) Install ultralytics
+# ===========================================
+!pip install ultralytics
+
+from ultralytics import YOLO
+import os
+# ===========================================
+# 4) Dataset Paths
+# ===========================================
+dataset_path = "/content/drive/MyDrive/project/test_final4"
+project_save_path = "/content/drive/MyDrive/project/mo2"  # all outputs saved here
+
+# ===========================================
+# 5) Load YOLO Pose Model
+# ===========================================
+model = YOLO("yolo11l-pose.pt")  # or yolov8l-pose.pt
+
+# ===========================================
+# 6) Train the Pose Model with Augmentation
+# ===========================================
+model.train(
+    data="/content/lego3.yaml",
+    imgsz=640,
+    epochs=15,
+    batch=-1,
+    device=0,
+    workers=12,
+
+    # Data Augmentation
+    augment=True,
+    flipud=0.5,fliplr=0.5,
+    mosaic=1.0,mixup=0.5,hsv_h=0.015,
+    hsv_s=0.7,hsv_v=0.4,degrees=10.0,
+    translate=0.1,scale=0.5,shear=2.0,
+
+
+    
+    half=True,  # <-- FP16 mode
+
+    # Save everything to Drive
+    project=project_save_path,
+    name="yolo11_pose_run",
+    exist_ok=True
+)
+
+# ===========================================
+# 7) Run Predictions on Validation Set
+# ===========================================
+val_results = model.predict(
+    source=f"{dataset_path}/val/images",  # validation images
+    save=True,
+    imgsz=640,
+    project=project_save_path,
+    name="val_predictions",
+    exist_ok=True
+)
+
+print("Validation predictions saved in Google Drive!")
+
+# ===========================================
+# 8) Run Predictions on Test Set
+# ===========================================
+test_results = model.predict(
+    source=f"{dataset_path}/test/images",  # test images
+    save=True,
+    imgsz=640,
+    project=project_save_path,
+    name="test_predictions",
+    exist_ok=True
+)
+
+print("Test predictions saved in Google Drive!")
