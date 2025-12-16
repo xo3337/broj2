@@ -55,22 +55,10 @@ model.train(
     exist_ok=True
 )
 
-# ===========================================
-# 7) Run Predictions on Validation Set
-# ===========================================
-val_results = model.predict(
-    source=f"{dataset_path}/val/images",  # validation images
-    save=True,
-    imgsz=640,
-    project=project_save_path,
-    name="val_predictions",
-    exist_ok=True
-)
 
-print("Validation predictions saved in Google Drive!")
 
 # ===========================================
-# 8) Run Predictions on Test Set
+# 7) Run Predictions on Test Set
 # ===========================================
 test_results = model.predict(
     source=f"{dataset_path}/test/images",  # test images
